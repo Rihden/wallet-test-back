@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const userRouter = require("./routes/user");
+const urlRouter = require("./routes/url");
 const mongoose = require("mongoose");
 const path = require("path");
 
@@ -25,7 +26,7 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.static("dist"));
-app.use("/url", userRouter);
+app.use("/url", urlRouter);
 app.use("/users", userRouter);
 
 app.get("/", (req, res) => {
