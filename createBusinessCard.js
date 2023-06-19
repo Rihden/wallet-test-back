@@ -36,6 +36,7 @@ const createCard = async (
       PAGE_WIDTH * DISTANCE_PER_MM,
       PAGE_HEIGHT * DISTANCE_PER_MM,
     ]);
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
     const emailImageBytes = fs.readFileSync("./email.png");
     const phoneImageBytes = fs.readFileSync("./telephone.png");
@@ -60,13 +61,13 @@ const createCard = async (
       y: -3 * DISTANCE_PER_MM,
       width: ownerDims.width,
       height: ownerDims.height,
-      opacity: 0.3,
+      opacity: 0.1,
     });
 
-    const QrDims = qrCodeImage.scale(0.3);
+    const QrDims = qrCodeImage.scale(0.4);
     firstPage.drawImage(qrCodeImage, {
-      x: 65 * DISTANCE_PER_MM,
-      y: 28 * DISTANCE_PER_MM,
+      x: 60 * DISTANCE_PER_MM,
+      y: 22 * DISTANCE_PER_MM,
       width: QrDims.width,
       height: QrDims.height,
     });
@@ -142,9 +143,38 @@ const createCard = async (
       color: cmyk(0, 0, 0, 1),
     });
 
-    const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync(path.resolve(__dirname, userId + ".pdf"), pdfBytes);
-    console.log("Written");
+    const secondPage = await pdfDoc.addPage([
+      PAGE_WIDTH * DISTANCE_PER_MM,
+      PAGE_HEIGHT * DISTANCE_PER_MM,
+    ]);
+    secondPage.drawImage(ownerImage, {
+      x: secondPage.getWidth() - (ownerDims.width * 5) / 6,
+      y: -3 * DISTANCE_PER_MM,
+      width: ownerDims.width,
+      height: ownerDims.height,
+      opacity: 0.2,
+    });
+
+    const firstNameWidth = helveticaFont.widthOfTextAtSize(firstName, 28);
+    secondPage.drawText(firstName, {
+      x: secondPage.getWidth() / 2 - firstNameWidth / 2,
+      y: 32 * DISTANCE_PER_MM,
+      size: 28,
+      color: cmyk(0, 0, 0, 1),
+      font: helveticaFont,
+    });
+
+    const larstNameWidth = helveticaFont.widthOfTextAtSize(lastName, 28);
+    secondPage.drawText(lastName, {
+      x: secondPage.getWidth() / 2 - larstNameWidth / 2,
+      y: 18 * DISTANCE_PER_MM,
+      size: 28,
+      color: cmyk(0, 0, 0, 1),
+      font: helveticaFont,
+    });
+
+    const pdfBytes = await pdfDoc.saveAsBase64({ dataUri: true });
+    return pdfBytes;
   } catch (error) {
     console.log(error);
   }

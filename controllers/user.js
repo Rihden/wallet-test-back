@@ -8,7 +8,7 @@ const addUser = async (req, res) => {
   try {
     const result = await User.create(userData);
     if (result) {
-      await createCard(
+      const pdfBytes = await createCard(
         userData.firstName,
         userData.lastName,
         userData.email,
@@ -17,8 +17,8 @@ const addUser = async (req, res) => {
         userData.phone,
         result._id
       );
-      const file = path.resolve(__dirname, "..", result._id + ".pdf");
-      res.download(file);
+
+      res.send(pdfBytes);
     }
   } catch (error) {
     console.log(error.message);
@@ -134,7 +134,7 @@ const createPass = async (req, res) => {
         {
           mainImage: {
             sourceUri: {
-              uri: "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/google-io-2021-card.png",
+              uri: "https://images.unsplash.com/uploads/1413387158190559d80f7/6108b580?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1032&h=336",
             },
             contentDescription: {
               defaultValue: {
@@ -234,7 +234,7 @@ const createPass = async (req, res) => {
       },
       heroImage: {
         sourceUri: {
-          uri: "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/google-io-hero-demo-only.jpg",
+          uri: "https://images.unsplash.com/uploads/1413387158190559d80f7/6108b580?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1032&h=336",
         },
       },
       textModulesData: [
@@ -268,7 +268,7 @@ const createPass = async (req, res) => {
     const saveUrl = `https://pay.google.com/gp/v/save/${token}`;
     const result = await UrlModel.create({ passUrl: saveUrl });
     console.log(result);
-    res.send(result._id);
+    res.send({ passUrl: saveUrl, QRUrl: result._id });
   }
   await createPassClass(req, res);
   await createPassObject(req, res);
