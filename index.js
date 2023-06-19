@@ -10,10 +10,10 @@ const path = require("path");
 const app = express();
 
 mongoose
-  .connect(
-    "mongodb+srv://Rihden:Bc7toEVwUWgmrmmq@cluster0.psp9a.mongodb.net/walletTest?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect(process.env.mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("connected to the database");
     app.listen(3000);
